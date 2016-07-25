@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1469481799913.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C9D0212F",
+    "lastKnownWriteTime" : 1469481038,
+    "last_content_update" : 1469481038,
+    "path" : "~/Github/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/import.R",
+    "project_path" : "import.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
