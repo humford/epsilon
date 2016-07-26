@@ -8,7 +8,7 @@ moment <- function(x, n)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
-arbitrary_split <- function(exprs)
+split <- function(exprs)
 {
   if (moment(exprs, 3) > 0) 
   {
@@ -18,16 +18,6 @@ arbitrary_split <- function(exprs)
   {
   	return(exprs < mean(exprs) - sd(exprs))
   }
-}
-
-arbitraryplus_split <- function(exprs)
-{
-	return 0
-}
-
-gaussian_split <- function(exprs)
-{
-	return 0
 }
 
 probes <- function(gene, map = mapper)
