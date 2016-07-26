@@ -1,1 +1,29 @@
-#First commit
+#TCGA KIRC METHYLATION ANALYSIS
+#BEN CHURCH AND HENRY WILLIAMS
+#GLOBALS
+
+moment <- function(x, n)
+{
+  s <- sum((x-mean(x))^n)/(length(x)-1)
+  return(abs(s)^(1/n) * sign(s) / sd(x))
+}
+
+categorize_tail <- function(exprs)
+{
+  return(exprs > mean(exprs) + sd(exprs))
+}
+
+probes <- function(gene, map = mapper)
+{
+  return(mapper[which(mapper[,"symbol"] == gene), "probe"])
+}
+
+TCGABarcode <- function(fileName)
+{
+  return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
+}
+
+Mvalue <- function(beta_value)
+{
+  return(log2(beta_value/(1-beta_value)))
+}
