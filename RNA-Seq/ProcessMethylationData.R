@@ -19,16 +19,19 @@ for(cancer in cancer.names)
   setwd("Methylation")
   
   MvalMatrix <- NULL
+
   
   for(d in dir())
   {
     setwd(d)
     file <- dir()[grepl("TCGA", dir())]
-    edat <- read.table(file, header = FALSE, skip = 2, sep = "\t", fill = TRUE)
-    MvalMatrix <- cbind(MvalMatrix, Mvalue(as.numeric(as.character(edat[,2]))))
+    edat <- fread(file, header = FALSE, skip = 2, sep = "\t")
+    MvalMatrix <- cbind(MvalMatrix, Mvalue(as.numeric(as.character(edat[[2]]))))
     colnames(MvalMatrix) <- c(colnames(MvalMatrix)[-length(colnames(MvalMatrix))], TCGABarcode(file))
     setwd("..")
   }
+  
+  edat <- as.data.frame(edat)
   
   setwd(paste("~/Documents/", cancer, sep = ""))
   
@@ -36,11 +39,17 @@ for(cancer in cancer.names)
   
   MvalMatrix <- MvalMatrix[!is.na(rowSums(MvalMatrix)),]
   
-  write.table(MvalMatrix, paste(cancer, "_Methylation_Processed", sep = ""), quote = FALSE)
+  MvalMatrix <- MvalMatrix[,!duplicated(colnames(MvalMatrix))]
   
   mapper <- edat[ edat[,1] %in% rownames(MvalMatrix),c(1,3)]
   colnames(mapper) <- c("probe", "symbol")
   
   write.table(mapper, "Methylation_Map", quote = FALSE)
-
+  
+  setwd("Gene_Methylation")
+  
+  for(symbol in unique(edat[which(edat[,3] != ""),3]))
+  {
+    write.table(MvalMatrix[which(mapper[,"symbol"] == symbol), ], symbol, quote = FALSE)
+  }
 }
