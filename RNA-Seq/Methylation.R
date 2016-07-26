@@ -9,6 +9,18 @@ categorize_tail <- function(exprs)
   return(exprs > mean(exprs) + sd(exprs))
 }
 
+mapper <- NULL
+
+probes <- function(gene, map = mapper)
+{
+  return(mapper[which(mapper[,"symbol"] == gene), "probe"])
+}
+
+TCGABarcode <- function(fileName)
+{
+  return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
+}
+
 #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
 cancer.names <- c("KIRC")
 
@@ -16,7 +28,6 @@ for(cancer in cancer.names)
 {
   setwd(paste("~/Documents/", cancer, sep = ""))
   exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
-  setwd("~/Documents/Tables")
   
   skews <- NULL
   for(i in 1:dim(exprMatrix)[[1]])
@@ -25,7 +36,9 @@ for(cancer in cancer.names)
   }
 
   skews <- skews[!is.na(skews)]
-  names(skews) <- rownames(exprMatrix)
-
+  names(skews) <- rownames(exprMatrix)   
   
+  MvalMatrix <- read.table(paste(cancer, "_Methylation_Processed", sep = ""))
+  mapper <- read.table("Methylation_Map")
+
 }
