@@ -61,7 +61,7 @@ main <- function()
       
       adjpvalues <- p.adjust(pvalues, method = "BH")
       sigprobes <- geneProbes[which(adjpvalues < cutoff)]
-      write.table(c(gene, length/length(pvalues), sigprobes), append = TRUE)
+      write.table(c(gene, length(sigprobes)/length(pvalues), sigprobes), append = TRUE)
     }
   }
 }
