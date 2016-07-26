@@ -20,18 +20,22 @@ main <- function()
     
     splitMatrix <- exprMatrix
     
-    for (symbol in colnames(splitMatrix)) 
+    for (symbol in rownames(splitMatrix)) 
     {
       splitMatrix[, symbol] <- split(exprMatrix[, symbol])
     }
     
-    for (gene in XXXX)
+    
+    for (symbol in rownames(splitMatrix))
     {
-      for (patient in gene) 
+      geneProbes <- probes(symbol)
+      
+      TMatrix <- NULL
+      NTMatrix <- NULL
+      
+      for (patient in colnames(splitMatrix)) 
       {
-        TMatrix <- NULL
-        NTMatrix <- NULL
-        mvalues <- MValues(bvalues[probes(gene), patient])
+        mvalues <- MvalMatrix[geneProbes, patient]
         
         if (splitMatrix[patient, symbol]  == 1) 
         {
@@ -43,14 +47,21 @@ main <- function()
         }
       }
       
-      for (probe in rowNames(TMatrix))
+      rownames(TMatrix) <- geneProbes
+      rownames(NTMatrix) <- geneProbes
+      
+      pvalues <- NULL
+      
+      for (probe in geneProbes)
       {
         pvalues[probe] <- wilcox.test(TMatrix[probe], NTMatrix[probe], correct = FALSE)
-        adjpvalues <- p.adjust(pvalue[probe], method = "BH")
-        sigprobes <- names(pvalues[which(adjpvalues < cutoff)])
-        
-        write.table(c(gene, length/length(pvalues), sigprobes), append = TRUE)
       }
+      
+      names(pvales) <- geneProbes
+      
+      adjpvalues <- p.adjust(pvalues, method = "BH")
+      sigprobes <- geneProbes[which(adjpvalues < cutoff)]
+      write.table(c(gene, length/length(pvalues), sigprobes), append = TRUE)
     }
   }
 }

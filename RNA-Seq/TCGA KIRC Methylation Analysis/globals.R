@@ -2,6 +2,8 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #GLOBALS
 
+cutoff <- 0.01
+
 moment <- function(x, n)
 {
   s <- sum((x-mean(x))^n)/(length(x)-1)
@@ -22,13 +24,15 @@ arbitrary_split <- function(exprs)
 
 arbitraryplus_split <- function(exprs)
 {
-	return 0
+	return(0)
 }
 
 gaussian_split <- function(exprs)
 {
-	return 0
+	return(0)
 }
+
+mapper <- NULL
 
 probes <- function(gene, map = mapper)
 {
