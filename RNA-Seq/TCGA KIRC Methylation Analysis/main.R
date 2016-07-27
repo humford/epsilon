@@ -27,7 +27,7 @@ source("~/Documents/Git/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/globals.R
         splits <- spliter(exprMatrix[symbol,])
         names(splits) <- colnames(exprMatrix)
         
-        for (patient in intersect(colnames(exprMatrix), colnames(MvalMatrix))) 
+        for (patient in colnames(MvalMatrix)) 
         {
           mvalues <- MvalMatrix[,patient]
           
