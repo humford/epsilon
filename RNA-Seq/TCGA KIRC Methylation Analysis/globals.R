@@ -22,12 +22,6 @@ splitter <- function(exprs)
   }
 }
 
-mapper <- NULL
-
-probes <- function(gene, map = mapper)
-{
-  return(mapper[which(mapper[,"symbol"] == gene), "probe"])
-}
 
 TCGABarcode <- function(fileName)
 {
