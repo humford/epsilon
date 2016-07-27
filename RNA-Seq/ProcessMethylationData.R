@@ -66,7 +66,7 @@ for(cancer in cancer.names)
   for(symbol in genes)
   {
     whichProbes <- c(which(mapper[, "symbol"] == symbol), toCheck[unlist(lapply(m, function(x) symbol %in% x))])
-    if(sum(whichProbes) > 1)write.table(MvalMatrix[whichProbes, ], symbol, quote = FALSE)
+    if(length(whichProbes) > 1)write.table(MvalMatrix[whichProbes, ], symbol, quote = FALSE)
     else write.table(t(MvalMatrix[whichProbes, ]), symbol, quote = FALSE)
   }
 }
