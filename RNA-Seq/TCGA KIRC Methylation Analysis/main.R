@@ -14,7 +14,10 @@ for(cancer in cancer.names)
   exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
   
   setwd("Gene_Methylation")
-  for (symbol in dir())
+  genes <- dir()
+  setwd(paste("~/Documents/", cancer, sep = ""))
+  
+  for (symbol in genes)
   {
     GeneMvalMatrix <- read.table(symbol)
     geneProbes <- rownames(GeneMvalMatrix)
@@ -52,11 +55,9 @@ for(cancer in cancer.names)
     adjpvalues <- p.adjust(pvalues, method = "BH")
     sigprobes <- geneProbes[which(adjpvalues < cutoff)]
     
-    setwd(paste("~/Documents/", cancer, sep = ""))
     if(length(sigprobes) > 0)
     {
       write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
     }
-    setwd("Gene_Methylation")
  }
 }
