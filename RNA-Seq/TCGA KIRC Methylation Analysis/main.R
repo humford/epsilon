@@ -16,8 +16,8 @@ for(cancer in cancer.names)
   setwd("Gene_Methylation")
   for (symbol in dir())
   {
-    MvalMatrix <- read.table(symbol)
-    geneProbes <- rownames(MvalMatrix)
+    GeneMvalMatrix <- read.table(symbol)
+    geneProbes <- rownames(GeneMvalMatrix)
     
     TMatrix <- NULL
     NTMatrix <- NULL
@@ -25,9 +25,9 @@ for(cancer in cancer.names)
     splits <- splitter(exprMatrix[symbol,])
     names(splits) <- colnames(exprMatrix)
     
-    for (patient in intersect(colnames(exprMatrix), colnames(MvalMatrix))) 
+    for (patient in intersect(colnames(exprMatrix), colnames(GeneMvalMatrix))) 
     {
-      mvalues <- MvalMatrix[,patient]
+      mvalues <- GeneMvalMatrix[,patient]
       
       if (splits[patient]) 
       {
@@ -53,7 +53,10 @@ for(cancer in cancer.names)
     sigprobes <- geneProbes[which(adjpvalues < cutoff)]
     
     setwd(paste("~/Documents/", cancer, sep = ""))
-    write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+    if(length(sigprobes) > 0)
+    {
+      write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+    }
     setwd("Gene_Methylation")
  }
 }

@@ -59,14 +59,32 @@ for(cancer in cancer.names)
   m <- strsplit(mapper[, "symbol"], ";")
   lens <- lapply(m, length)
   toCheck <- which(lens > 1)
-  m <- m[toCheck]
+  v <- NULL
+  for(i in toCheck)
+  {
+    for(s in m[[i]])
+    {
+      v <- rbind(v, c(mapper[i, "probe"], s))
+    }
+  }
+  
+  colnames(v) <- colnames(mapper)
+  map <- rbind(mapper, v)
   
   genes <- intersect(edat[,3], rownames(exprMatrix))
   
   for(symbol in genes)
   {
-    whichProbes <- c(which(mapper[, "symbol"] == symbol), toCheck[unlist(lapply(m, function(x) symbol %in% x))])
-    if(length(whichProbes) > 1)write.table(MvalMatrix[whichProbes, ], symbol, quote = FALSE)
-    else write.table(t(MvalMatrix[whichProbes, ]), symbol, quote = FALSE)
+    whichProbes <- map[which(map[,"symbol"] == symbol),"probe"]
+    if(length(whichProbes) > 0)
+    {
+      if(length(whichProbes) > 1)write.table(MvalMatrix[whichProbes, ], symbol, quote = FALSE)
+      else
+      {
+        m <- t(MvalMatrix[whichProbes, ])
+        rownames(m) <- whichProbes
+        write.table(m, symbol, quote = FALSE, )
+      }
+    }
   }
 }
