@@ -14,7 +14,7 @@ for(cancer in cancer.names)
   exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
   
   
-  for (symbol in intersect(rownames(exprMatrix), rownames(MvalMatrix)))
+  for (symbol in dir())
   {
     setwd("Gene_Methylation")
     
