@@ -12,14 +12,7 @@ moment <- function(x, n)
 
 splitter <- function(exprs)
 {
-  if (moment(exprs, 3) > 0) 
-  {
-    return(exprs > mean(exprs) + sd(exprs))
-  }
-  else if (moment(exprs, 3) < 0)
-  {
-    return(exprs < mean(exprs) - sd(exprs))
-  }
+  
 }
 
 mapper <- NULL
