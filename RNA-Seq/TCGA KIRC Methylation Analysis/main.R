@@ -24,7 +24,7 @@ for(cancer in cancer.names)
     TMatrix <- NULL
     NTMatrix <- NULL
     
-    splits <- spliter(exprMatrix[symbol,])
+    splits <- splitter(exprMatrix[symbol,])
     names(splits) <- colnames(exprMatrix)
     
     for (patient in intersect(colnames(exprMatrix), colnames(MvalMatrix))) 
