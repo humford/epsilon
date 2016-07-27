@@ -16,7 +16,7 @@ splitter <- function(exprs)
   {
     return(exprs > mean(exprs) + sd(exprs))
   }
-  else if (moment(expres, 3) < 0)
+  else if (moment(exprs, 3) < 0)
   {
     return(exprs < mean(exprs) - sd(exprs))
   }
