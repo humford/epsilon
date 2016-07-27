@@ -2,17 +2,27 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #GLOBALS
 
+cutoff <- 0.01
+
 moment <- function(x, n)
 {
   s <- sum((x-mean(x))^n)/(length(x)-1)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
-
-split <- function(exprs)
+splitter <- function(exprs)
 {
-	return 0
+  if (moment(exprs, 3) > 0) 
+  {
+    return(exprs > mean(exprs) + sd(exprs))
+  }
+  else if (moment(exprs, 3) < 0)
+  {
+    return(exprs < mean(exprs) - sd(exprs))
+  }
 }
+
+mapper <- NULL
 
 probes <- function(gene, map = mapper)
 {
@@ -21,7 +31,7 @@ probes <- function(gene, map = mapper)
 
 TCGABarcode <- function(fileName)
 {
-	return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
+  return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
 }
 
 Mvalue <- function(beta_value)

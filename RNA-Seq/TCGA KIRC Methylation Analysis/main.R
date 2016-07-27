@@ -2,55 +2,59 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #MAIN
 
-source("globals.R")
-source("import.R")
+source("~/Documents/Git/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/globals.R")
 
-main <- function() 
+
+#cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
+cancer.names <- c("KIRC")
+
+for(cancer in cancer.names)
 {
-  #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
-  cancer.names <- c("KIRC")
+  setwd(paste("~/Documents/", cancer, sep = ""))
+  exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
   
-  for(cancer in cancer.names)
+  
+  for (symbol in rownames(exprMatrix))
   {
-    setwd(paste("~/Documents/", cancer, sep = ""))
-    exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
+    setwd("Gene_Methylation")
     
-    MvalMatrix <- read.table(paste(cancer, "_Methylation_Processed", sep = ""))
-    mapper <- read.table("Methylation_Map")
+    MvalMatrix <- read.table(symbol)
+    geneProbes <- rownames(MvalMatrix)
     
-    splitMatrix <- exprMatrix
+    TMatrix <- NULL
+    NTMatrix <- NULL
     
-    for (symbol in colnames(splitMatrix)) 
+    splits <- splitter(exprMatrix[symbol,])
+    names(splits) <- colnames(exprMatrix)
+    
+    for (patient in intersect(colnames(exprMatrix), colnames(MvalMatrix))) 
     {
-      splitMatrix[, symbol] <- split(exprMatrix[, symbol])
-    }
-    
-    for (gene in XXXX)
-    {
-      for (patient in gene) 
-      {
-        TMatrix <- NULL
-        NTMatrix <- NULL
-        mvalues <- MValues(bvalues[probes(gene), patient])
-        
-        if (splitMatrix[patient, symbol]  == 1) 
-        {
-          TMatrix <- cbind(TMatrix, mvalues)
-        } 
-        else if (splitMatrix[patient, symbol] == 0)
-        {
-          NTMatrix <- cbind(NTMatrix, mvalues)
-        }
-      }
+      mvalues <- MvalMatrix[,patient]
       
-      for (probe in rowNames(TMatrix))
+      if (splits[patient]) 
       {
-        pvalues[probe] <- wilcox.test(TMatrix[probe], NTMatrix[probe], correct = FALSE)
-        adjpvalues <- p.adjust(pvalue[probe], method = "BH")
-        sigprobes <- names(pvalues[which(adjpvalues < cutoff)])
-        
-        write.table(c(gene, length/length(pvalues), sigprobes), append = TRUE)
+        TMatrix <- cbind(TMatrix, mvalues)
+      } 
+      else
+      {
+        NTMatrix <- cbind(NTMatrix, mvalues)
       }
     }
+    
+    rownames(TMatrix) <- geneProbes
+    rownames(NTMatrix) <- geneProbes
+    
+    pvalues <- NULL
+    
+    for (probe in geneProbes)
+    {
+      pvalues[probe] <- wilcox.test(TMatrix[probe,], NTMatrix[probe,], correct = FALSE)$p.value
+    }
+    
+    adjpvalues <- p.adjust(pvalues, method = "BH")
+    sigprobes <- geneProbes[which(adjpvalues < cutoff)]
+    
+    setwd(paste("~/Documents/", cancer, sep = ""))
+    write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
   }
 }
