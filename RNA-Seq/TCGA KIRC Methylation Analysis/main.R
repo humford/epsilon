@@ -37,49 +37,7 @@ for(cancer in cancer.names)
       } 
       else
       {
-<<<<<<< HEAD
-        setwd("Gene_Methylation")
-        
-        MvalMatrix <- read.table(symbol)
-        geneProbes <- rownames(MvalMatrix)
-        
-        TMatrix <- NULL
-        NTMatrix <- NULL
-        
-        splits <- spliter(exprMatrix[symbol,])
-        names(splits) <- colnames(exprMatrix)
-        
-        for (patient in colnames(MvalMatrix)) 
-        {
-          mvalues <- MvalMatrix[,patient]
-          
-          if (splits[patient]) 
-          {
-            TMatrix <- cbind(TMatrix, mvalues)
-          } 
-          else
-          {
-            NTMatrix <- cbind(NTMatrix, mvalues)
-          }
-        }
-        
-        rownames(TMatrix) <- geneProbes
-        rownames(NTMatrix) <- geneProbes
-        
-        pvalues <- NULL
-        
-        for (probe in geneProbes)
-        {
-          pvalues[probe] <- wilcox.test(TMatrix[probe,], NTMatrix[probe,], correct = FALSE)$p.value
-        }
-        
-        adjpvalues <- p.adjust(pvalues, method = "BH")
-        sigprobes <- geneProbes[which(adjpvalues < cutoff)]
-        setwd("..")
-        write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
-=======
         NTMatrix <- cbind(NTMatrix, mvalues)
->>>>>>> c2ccfc78515238a2f2e3759eb87b5901a511088f
       }
     }
     
