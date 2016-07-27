@@ -15,7 +15,6 @@ for(cancer in cancer.names)
   
   setwd("Gene_Methylation")
   genes <- dir()
-  setwd(paste("~/Documents/", cancer, sep = ""))
   
   for (symbol in genes)
   {
@@ -57,7 +56,9 @@ for(cancer in cancer.names)
     
     if(length(sigprobes) > 0)
     {
+      setwd(paste("~/Documents/", cancer, sep = ""))
       write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+      setwd("Gene_Methylation")
     }
  }
 }
