@@ -10,15 +10,15 @@ moment <- function(x, n)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
-spliter <- function(exprs)
+splitter <- function(exprs)
 {
   if (moment(exprs, 3) > 0) 
   {
-  	return(exprs > mean(exprs) + sd(exprs))
+    return(exprs > mean(exprs) + sd(exprs))
   }
   else if (moment(exprs, 3) < 0)
   {
-  	return(exprs < mean(exprs) - sd(exprs))
+    return(exprs < mean(exprs) - sd(exprs))
   }
 }
 
@@ -31,7 +31,7 @@ probes <- function(gene, map = mapper)
 
 TCGABarcode <- function(fileName)
 {
-	return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
+  return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
 }
 
 Mvalue <- function(beta_value)
