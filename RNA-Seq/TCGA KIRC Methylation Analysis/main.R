@@ -56,12 +56,12 @@ for(cancer in cancer.names)
     adjpvalues <- p.adjust(pvalues, method = "BH")
     sigprobes <- geneProbes[which(adjpvalues < cutoff)]
     
-#     if(length(sigprobes) > 0)
-#     {
-#       setwd(paste("~/Documents/", cancer, sep = ""))
-#       write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
-#       setwd("Gene_Methylation")
-#     }
+    if(length(sigprobes) > 0)
+    {
+      setwd(paste("~/Documents/", cancer, sep = ""))
+      write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+      setwd("Gene_Methylation")
+    }
     
     if(length(sigprobes) > 0)
     {
