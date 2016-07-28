@@ -5,6 +5,7 @@
 library(mclust)
 
 cutoff <- 0.01
+splitter_cutoff <- 0.05
 
 moment <- function(x, n)
 {
@@ -14,17 +15,24 @@ moment <- function(x, n)
 
 splitter <- function(exprs)
 {
-  mixmdl <- Mclust(exprs)
+  mixmdl <- Mclust(exprs, G = 1)
   mean <- mixmdl$parameters$mean
   sd <- sqrt(mixmdl$parameters$variance$sigmasq)
   if(moment(exprs, 3) > 0) 
   {
-    return(1 - pnorm(exprs, mean, sd) < cutoff)
+    return(1 - pnorm(exprs, mean, sd) < splitter_cutoff)
   }
   else if(moment(exprs, 3) < 0)
   {
-    return(pnorm(exprs, mean, sd) < cutoff)
+    return(pnorm(exprs, mean, sd) < splitter_cutoff)
   }
+}
+
+mkplot <- function(exprs)
+{
+  hist(exprs, col=rgb(1,0,0,0.5), main="Tail Splitting", xlab="log2(Expression)", breaks = seq(0, max(exprs) + 0.5, by = 0.25))
+  hist(exprs[splitter(exprs)], col=rgb(0,0,1,0.5), add=T, breaks = seq(0, max(exprs) + 0.5, by = 0.25))
+  box()
 }
 
 TCGABarcode <- function(fileName)
