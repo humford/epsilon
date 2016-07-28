@@ -16,6 +16,8 @@ for(cancer in cancer.names)
   setwd("Gene_Methylation")
   genes <- dir()
   
+  sigGenes <- NULL
+  
   for (symbol in genes)
   {
     GeneMvalMatrix <- read.table(symbol)
@@ -54,11 +56,20 @@ for(cancer in cancer.names)
     adjpvalues <- p.adjust(pvalues, method = "BH")
     sigprobes <- geneProbes[which(adjpvalues < cutoff)]
     
+#     if(length(sigprobes) > 0)
+#     {
+#       setwd(paste("~/Documents/", cancer, sep = ""))
+#       write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+#       setwd("Gene_Methylation")
+#     }
+    
     if(length(sigprobes) > 0)
     {
-      setwd(paste("~/Documents/", cancer, sep = ""))
-      write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
-      setwd("Gene_Methylation")
+      sigGenes <- rbind(sigGenes, c(symbol, min(adjpvalues), geneProbes[which(adjpvalues == min(adjpvalues))][1], length(sigprobes)))
     }
  }
+ colnames(sigGenes) <- c("Symbol", "p-value", "Most_Significant_Probe", "Number_of_Significant_Probes")
+ sigGenes <- sigGenes[order(as.numeric(sigGenes[, "p-value"])), ]
+ setwd(paste("~/Documents/", cancer, sep = ""))
+ write.table(sigGenes, paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE)
 }
