@@ -2,6 +2,8 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #GLOBALS
 
+library(mclust)
+
 cutoff <- 0.01
 
 moment <- function(x, n)
@@ -12,16 +14,18 @@ moment <- function(x, n)
 
 splitter <- function(exprs)
 {
-  if (moment(exprs, 3) > 0) 
+  mixmdl <- Mclust(exprs)
+  mean <- mixmdl$parameters$mean
+  sd <- sqrt(mixmdl$parameters$variance$sigmasq)
+  if(moment(exprs, 3) > 0) 
   {
-    return(exprs > mean(exprs) + sd(exprs))
+    return(1 - pnorm(exprs, mean, sd) < cutoff)
   }
-  else if (moment(exprs, 3) < 0)
+  else if(moment(exprs, 3) < 0)
   {
-    return(exprs < mean(exprs) - sd(exprs))
+    return(pnorm(exprs, mean, sd) < cutoff)
   }
 }
-
 
 TCGABarcode <- function(fileName)
 {
