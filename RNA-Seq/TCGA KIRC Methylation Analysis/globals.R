@@ -35,6 +35,12 @@ mkplot <- function(exprs)
   box()
 }
 
+addRow <- function(DF, newRow)
+{
+  DF[dim(DF)[1] + 1, ] <- newRow
+  return(DF)
+}
+
 
 
 TCGABarcode <- function(fileName)

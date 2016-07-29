@@ -16,7 +16,7 @@ for(cancer in cancer.names)
   setwd("Gene_Methylation")
   genes <- dir()
   
-  sigGenes <- NULL
+  geneStats <- data.frame(p.value = numeric(0), NumSigProbes = numeric(0), PercentSigProbes = numeric(0))
   
   for (symbol in genes)
   {
@@ -65,14 +65,13 @@ for(cancer in cancer.names)
         setwd("Gene_Methylation")
       }
       
-      if(length(sigprobes) > 0)
-      {
-        sigGenes <- rbind(sigGenes, c(symbol, min(adjpvalues), geneProbes[which(adjpvalues == min(adjpvalues))][1], length(sigprobes)))
-      }
+      geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigprobes), length(sigprobes)/length(geneProbes)))
+      rownames(geneStats)[dim(geneStats)[1]] <- symbol
     }
  }
- colnames(sigGenes) <- c("Symbol", "p-value", "Most_Significant_Probe", "Number_of_Significant_Probes")
- sigGenes <- sigGenes[order(as.numeric(sigGenes[, "p-value"])), ]
+ geneStats$p.value <- p.adjust(geneStats$p.value, method = "BH")
+ geneStats <- geneStats[order(geneStats$p.value), ]
+ significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
  setwd(paste("~/Documents/", cancer, sep = ""))
- write.table(sigGenes, paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE)
+ write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
 }
