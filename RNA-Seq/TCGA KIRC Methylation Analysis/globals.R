@@ -2,7 +2,10 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #GLOBALS
 
+library(mclust)
+
 cutoff <- 0.01
+splitter_cutoff <- 0.05
 
 moment <- function(x, n)
 {
@@ -10,38 +13,39 @@ moment <- function(x, n)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
-arbitrary_split <- function(exprs)
+splitter <- function(exprs)
 {
-  if (moment(exprs, 3) > 0) 
+  mixmdl <- Mclust(exprs, G = 1)
+  mean <- mixmdl$parameters$mean
+  sd <- sqrt(mixmdl$parameters$variance$sigmasq)
+  if(moment(exprs, 3) > 0) 
   {
-  	return(exprs > mean(exprs) + sd(exprs))
+    return(1 - pnorm(exprs, mean, sd) < splitter_cutoff)
   }
-  else if (moment(expres, 3) < 0)
+  else if(moment(exprs, 3) < 0)
   {
-  	return(exprs < mean(exprs) - sd(exprs))
+    return(pnorm(exprs, mean, sd) < splitter_cutoff)
   }
 }
 
-arbitraryplus_split <- function(exprs)
+mkplot <- function(exprs)
 {
-	return(0)
+  hist(exprs, col=rgb(1,0,0,0.5), main="Tail Splitting", xlab="log2(Expression)", breaks = seq(0, max(exprs) + 0.5, by = 0.25))
+  hist(exprs[splitter(exprs)], col=rgb(0,0,1,0.5), add=T, breaks = seq(0, max(exprs) + 0.5, by = 0.25))
+  box()
 }
 
-gaussian_split <- function(exprs)
+addRow <- function(DF, newRow)
 {
-	return(0)
+  DF[dim(DF)[1] + 1, ] <- newRow
+  return(DF)
 }
 
-mapper <- NULL
 
-probes <- function(gene, map = mapper)
-{
-  return(mapper[which(mapper[,"symbol"] == gene), "probe"])
-}
 
 TCGABarcode <- function(fileName)
 {
-	return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
+  return(paste(as.list(strsplit(strsplit(fileName, "lvl-3.")[[1]][2], "-")[[1]][1:3]), sep = "", collapse = "-"))
 }
 
 Mvalue <- function(beta_value)
