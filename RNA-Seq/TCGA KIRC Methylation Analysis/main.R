@@ -16,7 +16,7 @@ for(cancer in cancer.names)
   setwd("Gene_Methylation")
   genes <- dir()
   
-  geneStats <- data.frame(p.value = numeric(0), NumSigProbes = numeric(0), PercentSigProbes = numeric(0))
+  geneStats <- data.frame(p.value = numeric(0), NumSigProbes = numeric(0), PercentSigProbes = numeric(0), MvalDiff = numeric(0), Skewness = numeric(0))
   
   for (symbol in genes)
   {
@@ -56,22 +56,27 @@ for(cancer in cancer.names)
       }
       
       adjpvalues <- p.adjust(pvalues, method = "BH")
-      sigprobes <- geneProbes[which(adjpvalues < cutoff)]
+      sigProbes <- geneProbes[which(adjpvalues < cutoff)]
       
-      if(length(sigprobes) > 0)
+      if(length(sigProbes) > 0)
       {
-        setwd(paste("~/Documents/", cancer, sep = ""))
-        write.table(t(c(symbol, length(sigprobes)/length(pvalues), sigprobes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+        setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
+        write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
         setwd("Gene_Methylation")
       }
       
-      geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigprobes), length(sigprobes)/length(geneProbes)))
+      geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigProbes), length(sigProbes)/length(geneProbes), 
+                                          sign(moment(exprMatrix[symbol, ], 3)) * (skerowMeans(TMatrix)[order(adjpvalues)[1]] - rowMeans(NTMatrix)[order(adjpvalues)[1]]), moment(exprMatrix[symbol, ], 3)))
       rownames(geneStats)[dim(geneStats)[1]] <- symbol
     }
  }
+ 
  geneStats$p.value <- p.adjust(geneStats$p.value, method = "BH")
  geneStats <- geneStats[order(geneStats$p.value), ]
  significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
- setwd(paste("~/Documents/", cancer, sep = ""))
+ setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
  write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
+ 
+ plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
+ plot(geneStats$MvalDiff, geneStats$Skewness)
 }
