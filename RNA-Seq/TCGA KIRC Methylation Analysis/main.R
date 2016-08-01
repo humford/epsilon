@@ -66,7 +66,7 @@ for(cancer in cancer.names)
       }
       
       geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigProbes), length(sigProbes)/length(geneProbes), 
-                                          sign(moment(exprMatrix[symbol, ], 3)) * (rowMeans(TMatrix)[order(adjpvalues)[1]] - rowMeans(NTMatrix)[order(adjpvalues)[1]]), moment(exprMatrix[symbol, ], 3)))
+                                          rowMeans(TMatrix)[order(adjpvalues)[1]] - rowMeans(NTMatrix)[order(adjpvalues)[1]], moment(exprMatrix[symbol, ], 3)))
       rownames(geneStats)[dim(geneStats)[1]] <- symbol
     }
  }
