@@ -5,7 +5,6 @@
 library(mclust)
 
 cutoff <- 0.01
-splitter_cutoff <- 0.05
 
 moment <- function(x, n)
 {
@@ -13,7 +12,7 @@ moment <- function(x, n)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
-splitter <- function(exprs)
+gaussian_splitter <- function(exprs, splitter_cutoff)
 {
   mixmdl <- Mclust(exprs, G = 1)
   mean <- mixmdl$parameters$mean
@@ -27,6 +26,20 @@ splitter <- function(exprs)
     return(pnorm(exprs, mean, sd) < splitter_cutoff)
   }
 }
+
+quantile_splitter <- function(exprs, quantile_cutoff) 
+{
+  if(moment(exprs, 3) > 0) 
+  {
+    return(exprs > quantile(exprs, quantile_cutoff))
+  }
+  else if(moment(exprs, 3) < 0)
+  {
+    return(exprs < quantile(exprs, 1-quantile_cutoff))
+  }
+}
+
+
 
 mkplot <- function(exprs, symbol)
 {
