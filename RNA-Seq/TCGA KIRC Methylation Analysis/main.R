@@ -28,7 +28,7 @@ for(cancer in cancer.names)
     TMatrix <- NULL
     NTMatrix <- NULL
     
-    splits <- splitter(exprMatrix[symbol,])
+    splits <- splitter(exprMatrix[symbol,], t_name)
     names(splits) <- colnames(exprMatrix)
     
     if(sum(splits) > 0)
@@ -76,7 +76,7 @@ for(cancer in cancer.names)
  geneStats$p.value <- p.adjust(geneStats$p.value, method = "BH")
  geneStats <- geneStats[order(geneStats$p.value), ]
  significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
- setwd(paste("~/Documents/", cancer, "/Results", t_name, sep = ""))
+ setwd(paste("~/Documents/", cancer, "/Results/", t_name, sep = ""))
  write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
  
  plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
