@@ -28,9 +28,9 @@ splitter <- function(exprs)
   }
 }
 
-mkplot <- function(exprs)
+mkplot <- function(exprs, symbol)
 {
-  hist(exprs, col=rgb(1,0,0,0.5), main="Tail Splitting", xlab="log2(Expression)", breaks = seq(0, max(exprs) + 0.5, by = 0.25))
+  hist(exprs, col=rgb(1,0,0,0.5), main=paste(symbol ,"Tail Splitting"), xlab="log2(Expression)", breaks = seq(0, max(exprs) + 0.5, by = 0.25))
   hist(exprs[splitter(exprs)], col=rgb(0,0,1,0.5), add=T, breaks = seq(0, max(exprs) + 0.5, by = 0.25))
   box()
 }
