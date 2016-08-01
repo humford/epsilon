@@ -4,7 +4,6 @@
 
 source("~/Documents/Git/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/globals.R")
 
-
 #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
 cancer.names <- c("KIRC")
 
@@ -13,6 +12,9 @@ for(cancer in cancer.names)
   setwd(paste("~/Documents/", cancer, sep = ""))
   exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
   
+  
+  for(t_name in c("G0.1", "G0.05", "Q90", "Q95"))
+  {
   setwd("Gene_Methylation")
   genes <- dir()
   
@@ -60,7 +62,7 @@ for(cancer in cancer.names)
       
       if(length(sigProbes) > 0)
       {
-        setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
+        setwd(paste("~/Documents/", cancer, "/Results", t_name, sep = ""))
         write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
         setwd("Gene_Methylation")
       }
@@ -74,9 +76,10 @@ for(cancer in cancer.names)
  geneStats$p.value <- p.adjust(geneStats$p.value, method = "BH")
  geneStats <- geneStats[order(geneStats$p.value), ]
  significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
- setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
+ setwd(paste("~/Documents/", cancer, "/Results", t_name, sep = ""))
  write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
  
  plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
  plot(geneStats$MvalDiff, geneStats$Skewness)
+ }
 }
