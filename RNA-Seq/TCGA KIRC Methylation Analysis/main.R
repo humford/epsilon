@@ -2,46 +2,44 @@
 #BEN CHURCH AND HENRY WILLIAMS
 #MAIN
 
-source("globals.R")
-source("import.R")
+source("~/Documents/Git/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/globals.R")
 
-main <- function() 
+
+#cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
+cancer.names <- c("KIRC")
+
+for(cancer in cancer.names)
 {
-  #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
-  cancer.names <- c("KIRC")
+  setwd(paste("~/Documents/", cancer, sep = ""))
+  exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
   
-  for(cancer in cancer.names)
+  setwd("Gene_Methylation")
+  genes <- dir()
+  
+  geneStats <- data.frame(p.value = numeric(0), NumSigProbes = numeric(0), PercentSigProbes = numeric(0), MvalDiff = numeric(0), Skewness = numeric(0))
+  
+  for (symbol in genes)
   {
-    setwd(paste("~/Documents/", cancer, sep = ""))
-    exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
+    GeneMvalMatrix <- read.table(symbol)
+    geneProbes <- rownames(GeneMvalMatrix)
     
-    MvalMatrix <- read.table(paste(cancer, "_Methylation_Processed", sep = ""))
-    mapper <- read.table("Methylation_Map")
+    TMatrix <- NULL
+    NTMatrix <- NULL
     
-    splitMatrix <- exprMatrix
+    splits <- splitter(exprMatrix[symbol,])
+    names(splits) <- colnames(exprMatrix)
     
-    for (symbol in rownames(splitMatrix)) 
+    if(sum(splits) > 0)
     {
-      splitMatrix[, symbol] <- split(exprMatrix[, symbol])
-    }
-    
-    
-    for (symbol in rownames(splitMatrix))
-    {
-      geneProbes <- probes(symbol)
-      
-      TMatrix <- NULL
-      NTMatrix <- NULL
-      
-      for (patient in colnames(splitMatrix)) 
+      for (patient in intersect(colnames(exprMatrix), colnames(GeneMvalMatrix))) 
       {
-        mvalues <- MvalMatrix[geneProbes, patient]
+        mvalues <- GeneMvalMatrix[,patient]
         
-        if (splitMatrix[patient, symbol]  == 1) 
+        if (splits[patient]) 
         {
           TMatrix <- cbind(TMatrix, mvalues)
         } 
-        else if (splitMatrix[patient, symbol] == 0)
+        else
         {
           NTMatrix <- cbind(NTMatrix, mvalues)
         }
@@ -54,14 +52,31 @@ main <- function()
       
       for (probe in geneProbes)
       {
-        pvalues[probe] <- wilcox.test(TMatrix[probe], NTMatrix[probe], correct = FALSE)
+        pvalues[probe] <- wilcox.test(TMatrix[probe,], NTMatrix[probe,], correct = FALSE)$p.value
       }
       
-      names(pvales) <- geneProbes
-      
       adjpvalues <- p.adjust(pvalues, method = "BH")
-      sigprobes <- geneProbes[which(adjpvalues < cutoff)]
-      write.table(c(gene, length(sigprobes)/length(pvalues), sigprobes), paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), append = TRUE)
+      sigProbes <- geneProbes[which(adjpvalues < cutoff)]
+      
+      if(length(sigProbes) > 0)
+      {
+        setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
+        write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+        setwd("Gene_Methylation")
+      }
+      
+      geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigProbes), length(sigProbes)/length(geneProbes), 
+                                          rowMeans(TMatrix)[order(adjpvalues)[1]] - rowMeans(NTMatrix)[order(adjpvalues)[1]], moment(exprMatrix[symbol, ], 3)))
+      rownames(geneStats)[dim(geneStats)[1]] <- symbol
     }
-  }
+ }
+ 
+ geneStats$p.value <- p.adjust(geneStats$p.value, method = "BH")
+ geneStats <- geneStats[order(geneStats$p.value), ]
+ significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
+ setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
+ write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
+ 
+ plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
+ plot(significantGenes$MvalDiff[1:100], significantGenes$Skewness[1:100])
 }
