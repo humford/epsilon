@@ -5,7 +5,7 @@
 library(mclust)
 
 cutoff <- 0.01
-splitter_cutoff <- 0.05
+splitter_cutoff <- 0.1
 
 moment <- function(x, n)
 {
