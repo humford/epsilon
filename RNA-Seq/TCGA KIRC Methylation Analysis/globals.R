@@ -12,6 +12,14 @@ moment <- function(x, n)
   return(abs(s)^(1/n) * sign(s) / sd(x))
 }
 
+splitter <- function(exprs, mode)
+{
+  if(mode == "G0.1")return(gaussian_splitter(exprs, 0.1))
+  if(mode == "G0.05")return(gaussian_splitter(exprs, 0.05))
+  if(mode == "Q90")return(quantile_splitter(exprs, 0.90))
+  if(mode == "Q95")return(quantile_splitter(exprs, 0.95))
+}
+
 gaussian_splitter <- function(exprs, splitter_cutoff)
 {
   mixmdl <- Mclust(exprs, G = 1)
