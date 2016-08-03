@@ -79,7 +79,6 @@ for(cancer in cancer.names)
  setwd(paste("~/Documents/", cancer, "/Results/", t_name, sep = ""))
  write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
  
- plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
  plot(significantGenes$MvalDiff[1:100], significantGenes$Skewness[1:100])
  }
 }
