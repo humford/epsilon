@@ -10,7 +10,7 @@ Mvalue <- function(beta_value)
 
 
 #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
-cancer.names <- c("KIRC")
+cancer.names <- c("SKCM")
 
 for(cancer in cancer.names)
 {

@@ -6,7 +6,7 @@ source("~/Documents/Git/epsilon/RNA-Seq/TCGA KIRC Methylation Analysis/globals.R
 
 
 #cancer.names <- c("SKCM", "HNSC", "LGG", "LUSC", "KIRC")
-cancer.names <- c("KIRC")
+cancer.names <- c("SKCM", "LGG")
 
 for(cancer in cancer.names)
 {
