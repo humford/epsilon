@@ -62,7 +62,7 @@ for(cancer in cancer.names)
       {
         setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
         write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
-        setwd("Gene_Methylation")
+        setwd(paste("~/Documents/", cancer, "/Gene_Methylation", sep = ""))
       }
       
       geneStats <- addRow(geneStats, c(min(adjpvalues), length(sigProbes), length(sigProbes)/length(geneProbes), 
