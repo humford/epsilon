@@ -61,7 +61,7 @@ for(cancer in cancer.names)
       if(length(sigProbes) > 0)
       {
         setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
-        write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Signifcant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
+        write.table(t(c(symbol, length(sigProbes)/length(pvalues), sigProbes)), paste(cancer, "Significant_Methylated_Probes", sep = "_"), append = TRUE, row.names = FALSE, col.names = FALSE, quote = FALSE)
         setwd(paste("~/Documents/", cancer, "/Gene_Methylation", sep = ""))
       }
       
@@ -75,7 +75,7 @@ for(cancer in cancer.names)
  geneStats <- geneStats[order(geneStats$p.value), ]
  significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
  setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
- write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Signifcant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
+ write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Significant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
  
  plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
  plot(significantGenes$MvalDiff[1:100], significantGenes$Skewness[1:100])
