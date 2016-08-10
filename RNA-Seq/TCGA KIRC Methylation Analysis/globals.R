@@ -52,3 +52,15 @@ Mvalue <- function(beta_value)
 {
   return(log2(beta_value/(1-beta_value)))
 }
+
+function_mapper <- read.table("~/Documents/Methylation_Map", header = TRUE, nrow = 3656001, colClasses = c("character", "character"))
+
+probe_function <- function(probe, symbol)
+{
+  s <- strsplit(as.character(function_mapper[probe, ][1]), ";")[[1]]
+  group <- strsplit(as.character(function_mapper[probe, ][2]), ";")[[1]][which(s == symbol)]
+  if(all(group == "TSS200" | group == "TSS1500")) return("promoter")
+  else if(all(group == "3'UTR" | group == "5'UTR")) return("UTR")
+  else if(all(group == "Body" | group == "1stExon")) return("body")
+  else return(NULL)
+}
