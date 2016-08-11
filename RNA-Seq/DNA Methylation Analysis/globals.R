@@ -64,3 +64,11 @@ probe_function <- function(probe, symbol)
   else if(all(group == "Body" | group == "1stExon")) return("body")
   else return(NULL)
 }
+
+quadrant <- function(x)
+{
+  if(x[1] > 0 && x[2] > 0) return(1)
+  else if(x[1] <= 0 && x[2] > 0) return(2)
+  else if(x[1] <= 0 && x[2] <= 0) return(3)
+  else return(4)
+}
