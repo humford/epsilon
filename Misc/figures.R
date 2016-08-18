@@ -120,13 +120,32 @@ with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
 x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 3)])))
 x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 3)])))  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="green"))
 
+library(mclust)
+
 y <- dbeta(seq(0,1, by=0.01), 3,7)
 x <- seq(0,1, by=0.01)
-dens <- plot(x,y, main = "", xlab = "Skewness", type = 'l', xaxt='n', yaxt='n', ann=FALSE)
-  
+dens <- plot(x,y, main = "Gaussian Tail Splitting", xlab = "", ylab="", type = 'l', xaxt='n', yaxt='n', ann=TRUE)
+
+mixmdl <- Mclust(y)
+mean <- mixmdl$parameters$mean
+sd <- sqrt(mixmdl$parameters$variance$sigmasq)
+gauss <- dnorm(y, mean, sd)
+lines(gauss)
+
 x1 <- min(which(x >= 0.0))
 x2 <- max(which(x < 0.6))
-with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(1,0,0,0.5)))
 x1 <- min(which(x >= 0.59))
 x2 <- max(which(x < 1.0))
-with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(0,0,1,0.5)))
+
+y <- dbeta(seq(0,1, by=0.01), 3,7)
+x <- seq(0,1, by=0.01)
+dens <- plot(x,y, main = "Quantile Tail Splitting", xlab = "", ylab="", type = 'l', xaxt='n', yaxt='n', ann=TRUE)
+
+x1 <- min(which(x >= 0.0))
+x2 <- max(which(x < 0.6))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(1,0,0,0.5)))
+x1 <- min(which(x >= 0.59))
+x2 <- max(which(x < 1.0))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(0,0,1,0.5)))
