@@ -91,33 +91,42 @@ lines(1:(length(lower)-20), fit$par[1]*exp(-fit$par[2] * (1:(length(lower)-20)))
 
 cancer <- "GBM"
 
-  setwd(paste("~/Documents/", cancer, sep = ""))
-  exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
-  setwd("~/Documents/Graphs")
-  skews <- NULL
-  for(i in 1:dim(exprMatrix)[[1]])
-  {
-    skews[i] <- skew((exprMatrix[i,]), 3)
-  }
+setwd(paste("~/Documents/", cancer, sep = ""))
+exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
+setwd("~/Documents/Graphs")
+skews <- NULL
+for(i in 1:dim(exprMatrix)[[1]])
+{
+  skews[i] <- skew((exprMatrix[i,]), 3)
+}
 
-  skews <- skews[!is.na(skews)]
-  names(skews) <- rownames(exprMatrix)
+skews <- skews[!is.na(skews)]
+names(skews) <- rownames(exprMatrix)
 
-  controlDiff <- skews[intersect(names(skews), names(ControlSkews))] - ControlSkews[intersect(names(skews), names(ControlSkews))]
+controlDiff <- skews[intersect(names(skews), names(ControlSkews))] - ControlSkews[intersect(names(skews), names(ControlSkews))]
   
-  library(mclust)
-  out <- densityMclust(controlDiff, G = 3, modelNames = "V")
+library(mclust)
+out <- densityMclust(controlDiff, G = 3, modelNames = "V")
+
+dens <- density(controlDiff)
+plot(dens, main = "", xlab = "Skewness")
+
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 1)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 1)])))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 2)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 2)])))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 3)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 3)])))  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="green"))
+
+y <- dbeta(seq(0,1, by=0.01), 3,7)
+x <- seq(0,1, by=0.01)
+dens <- plot(x,y, main = "", xlab = "Skewness", type = 'l', xaxt='n', yaxt='n', ann=FALSE)
   
-  dens <- density(controlDiff)
-  plot(dens, main = "", xlab = "Skewness")
-  
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 1)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 1)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 2)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 2)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 3)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 3)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="green"))
-  
+x1 <- min(which(x >= 0.0))
+x2 <- max(which(x < 0.6))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
+x1 <- min(which(x >= 0.59))
+x2 <- max(which(x < 1.0))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
