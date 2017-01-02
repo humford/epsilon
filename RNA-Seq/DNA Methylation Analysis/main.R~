@@ -76,4 +76,7 @@ for(cancer in cancer.names)
  significantGenes <- geneStats[which(geneStats$p.value < cutoff), ]
  setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
  write.table(cbind(Symbol = rownames(significantGenes), format(significantGenes, digits = 3)) , paste(cancer, "Significant_Methylated_Genes", sep = "_"), row.names = FALSE, quote = FALSE,)
+ 
+ plot(-log(significantGenes$p.value), abs(significantGenes$Skewness))
+ plot(significantGenes$MvalDiff[1:100], significantGenes$Skewness[1:100])
 }

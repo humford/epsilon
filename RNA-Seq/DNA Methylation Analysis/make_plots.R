@@ -1,6 +1,6 @@
 
  setwd(paste("~/Documents/", cancer, "/Results", sep = ""))
- pdf(paste("~/Documents/Graphs/", cancer, "_Methylation_Results", sep = ""))
+ pdf(paste("~/Documents/Graphs/", cancer, "_Methylation_Results.pdf", sep = ""))
  
  clusterTable <- NULL
  
@@ -64,7 +64,7 @@
 
  corSampling <- NULL
  
- for(i in 100:min(1000, length(which(functionStats[[1]]$p.value < cutoff)), length(which(functionStats[[2]]$p.value < cutoff)), length(which(functionStats[[3]]$p.value < cutoff))))
+ for(i in 100:min(500, length(which(functionStats[[1]]$p.value < cutoff)), length(which(functionStats[[2]]$p.value < cutoff)), length(which(functionStats[[3]]$p.value < cutoff))))
  {
     row = i
     for(f in functions)
@@ -87,7 +87,7 @@
       ggplot(as.data.frame(corSampling)) +
       scale_colour_manual(name= "Probe Function", values=c("promoter" = "red", "UTR" = "blue", "body" = "green")) +
       geom_smooth(aes(x=num, y=promoter_estimate, color = "promoter"), size=1.0, span =  0.7) + 
-      scale_x_continuous('Number of Genes',limits=c(100,min(1000, length(which(functionStats[[1]]$p.value < cutoff)), length(which(functionStats[[2]]$p.value < cutoff)), length(which(functionStats[[3]]$p.value < cutoff)))) +   
+      scale_x_continuous('Number of Genes',limits=c(100,min(500, length(which(functionStats[[1]]$p.value < cutoff)), length(which(functionStats[[2]]$p.value < cutoff)), length(which(functionStats[[3]]$p.value < cutoff))))) +   
       scale_y_continuous('Correlation') +
       geom_ribbon(aes(x=num, ymin = promoter_lower, 
       ymax=promoter_upper), colour="red", fill="red",alpha=0.1) + 
