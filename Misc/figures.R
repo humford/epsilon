@@ -91,33 +91,69 @@ lines(1:(length(lower)-20), fit$par[1]*exp(-fit$par[2] * (1:(length(lower)-20)))
 
 cancer <- "GBM"
 
-  setwd(paste("~/Documents/", cancer, sep = ""))
-  exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
-  setwd("~/Documents/Graphs")
-  skews <- NULL
-  for(i in 1:dim(exprMatrix)[[1]])
-  {
-    skews[i] <- skew((exprMatrix[i,]), 3)
-  }
+setwd(paste("~/Documents/", cancer, sep = ""))
+exprMatrix <- as.matrix(read.table(paste(cancer, "Processed", sep = "_")))
+setwd("~/Documents/Graphs")
+skews <- NULL
+for(i in 1:dim(exprMatrix)[[1]])
+{
+  skews[i] <- skew((exprMatrix[i,]), 3)
+}
 
-  skews <- skews[!is.na(skews)]
-  names(skews) <- rownames(exprMatrix)
+skews <- skews[!is.na(skews)]
+names(skews) <- rownames(exprMatrix)
 
-  controlDiff <- skews[intersect(names(skews), names(ControlSkews))] - ControlSkews[intersect(names(skews), names(ControlSkews))]
+controlDiff <- skews[intersect(names(skews), names(ControlSkews))] - ControlSkews[intersect(names(skews), names(ControlSkews))]
   
-  library(mclust)
-  out <- densityMclust(controlDiff, G = 3, modelNames = "V")
-  
-  dens <- density(controlDiff)
-  plot(dens, main = "", xlab = "Skewness")
-  
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 1)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 1)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 2)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 2)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
-  x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 3)])))
-  x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 3)])))
-  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="green"))
-  
+library(mclust)
+out <- densityMclust(controlDiff, G = 3, modelNames = "V")
+
+dens <- density(controlDiff)
+plot(dens, main = "", xlab = "Skewness")
+
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 1)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 1)])))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="red"))
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 2)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 2)])))
+with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="blue"))
+x1 <- min(which(dens$x >= min(controlDiff[which(out$classification == 3)])))
+x2 <- max(which(dens$x < max(controlDiff[which(out$classification == 3)])))  with(dens, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col="green"))
+
+
+
+par(mfrow = c(1,2))
+
+library(mclust)
+
+y <- dgamma(seq(0,2, by=0.01), 3,5)
+x <- seq(0,2, by=0.01)
+gauss <- plot(x,y, main = "Gaussian Tail Splitting", xlab = "", ylab="", type = 'l', xaxt='n', yaxt='n', ann=TRUE)
+
+mixmdl <- Mclust(rgamma(1:100000, 3,6), G = 1)
+mean <- mixmdl$parameters$mean
+sd <- sqrt(mixmdl$parameters$variance$sigmasq)
+line <- dnorm(x, mean, sd)
+lines(x, line, type = 'l', lty = 2, lwd = 2)
+text(1.6, 0.3, "P-Value Cutoff")
+
+x1 <- min(which(x >= 0.0))
+x2 <- max(which(x < 1.26))
+with(gauss, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(1,0,0,0.5)))
+x1 <- min(which(x >= 1.25))
+x2 <- length(x)
+with(gauss, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(0,0,1,0.5)))
+
+y <- dgamma(seq(0,2, by=0.01), 3,5)
+x <- seq(0,2, by=0.01)
+quant <- plot(x,y, main = "Quantile Tail Splitting", xlab = "", ylab="", type = 'l', xaxt='n', yaxt='n', ann=TRUE)
+
+abline(v = 1.25, lty = 2, lwd = 2)
+text(1.6, 0.3, "Quantile")
+
+x1 <- min(which(x >= 0.0))
+x2 <- max(which(x < 1.26))
+with(quant, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(1,0,0,0.5)))
+x1 <- min(which(x >= 1.25))
+x2 <- length(x)
+with(quant, polygon(x=c(x[c(x1,x1:x2,x2)]), y= c(0, y[x1:x2], 0), col=rgb(0,0,1,0.5)))
